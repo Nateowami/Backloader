@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "Backloader",
+  "version": "0.1.0",
+  "description": "A Chrome extension to redirect CDN requests to another CDN or local resource",
+
+  "permissions": [
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*/*"
+  ],
+
+  "background": {
+    "scripts": ["scripts/background.js", "scripts/list.js"]
+  }
+}
