@@ -1,3 +1,45 @@
+//set "enabled" to true on first run
+chrome.runtime.onInstalled.addListener(function(details){
+		if(details.reason === "install"){
+			chrome.storage.local.set({enabled: true, 
+				redirected: 0, 
+				blocked: 0});
+		}
+	});
+
+//add event listener for updates to local storage
+chrome.storage.onChanged.addListener(updateEnabled);
+
+//update backloader.enabled when it get's changed in local storage
+function updateEnabled(changes, namespace) {
+	for (key in changes) {
+		var change = changes[key];
+		//only do something if it's "enabled" that gets updated
+		if(key == "enabled" && namespace == "local"){
+			backloader.enabled = change.newValue;
+			console.log("Updated local-storage-enable-status from " + change.oldValue + " to " + change.newValue);
+		}
+	}
+}
+
+var backloader = {
+	redirected: 0,
+	blocked: 0,
+	enabled: true,
+		
+	/**
+	 * Increments the value indicated by key (may be "redirected" 
+	 * or "blocked").
+	 * @param {String} key - The variable to increment.
+	 */
+	increment: function(key){
+		var obj = {};
+		obj[key] = ++this[key];
+		chrome.storage.local.set(obj);
+		console.log("updated " + key + " to " + this[key]);
+	}
+};
+
 //register an event listener for all web requests
 chrome.webRequest.onBeforeRequest.addListener(manageRequest, {urls: ["<all_urls>"]}, ["blocking"]);
 
@@ -7,6 +49,9 @@ chrome.webRequest.onBeforeRequest.addListener(manageRequest, {urls: ["<all_urls>
  * @param request - The webrequest.
  */
 function manageRequest(request){
+	//only run if filtering is enabled
+	if(!backloader.enabled) return;
+	
 	var list = completeFilterList();
 	for(var i in list){
 		if(match(list[i].source, request.url)){
@@ -17,12 +62,14 @@ function manageRequest(request){
 				
 			if(redirect){
 				console.log("Redirecting "+request.url+" to " + redirect);
+				backloader.increment("redirected");
 				return {redirectUrl: redirect};
 			}
 			
 			else {
 				//block the request
 				console.log("Blocking " + request.url);
+				backloader.increment("blocked");
 				return {cancel: true};
 			}
 			
