@@ -1,0 +1,14 @@
+body {
+	background-color: #FFF;
+	margin: 0px;
+	padding: 0px;
+	width: 130px;
+}
+
+* {
+	-webkit-user-select: none;
+}
+
+.enableButton {
+	width: 70px !important;
+}
