@@ -14,11 +14,10 @@ Installation
 4. Drag the file (Backloader.crx) from its folder to Chrome on the extensions page.
 5. Chrome will ask you to confirm that you want to install the file. Click "Add."
 
-That's it! If you experience any issues try disabling Backloader by clicking on the extension's icon and unselecting "Enable redirects and blocking."
+That's it! If you experience any issues try disabling Backloader by clicking on the extension's icon and deselecting "Enable redirects and blocking."
 
 Future Plans
 ============
 
 * Expand default filter list
-* Allow custom filters
 * Fix bug whereby blocked-count (and possibly redirect-count) sometimes become undefined
