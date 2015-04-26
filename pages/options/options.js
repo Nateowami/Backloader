@@ -4,13 +4,13 @@ var layout;
 var filterList;
 
 $(document).ready(function() {
-  layout = buildLayout();
+  //layout = buildLayout();
   
-  chrome.storage.local.get('filter-list', init);
+  //chrome.storage.local.get('filter-list', init);
   
-  p.domInsert(layout.filterListBox, document.getElementById("filterList"));
+  //p.domInsert(layout.filterListBox, document.getElementById("filterList"));
   
-  p.domInsert(layout.detailBox, document.getElementById("details"));
+  //p.domInsert(layout.detailBox, document.getElementById("details"));
 });
 
 function buildLayout() {
@@ -27,7 +27,6 @@ function buildLayout() {
 
 function init(storageResults) {
   filterList = storageResults["filter-list"] ? storageResults["filter-list"] : [];
-  
   buildFilterList();
 }
 
@@ -53,9 +52,7 @@ function buildFilterList(activeIndex) {
     listButton.registerCallback("clicked", "click", function(widget) {
       buildDetails(filterList[+widget.name.split("-")[1]]);
       
-      for(var i = 0; i < layout.filterListBox.children.length; i++) {
-        $(".listButton").removeClass("active");
-      }
+      $(".listButton").removeClass("active");
       
       $(widget.html).addClass("active");
     });
@@ -162,18 +159,17 @@ function buildDetails(item) {
     });
     
     
-    var protocolSwitch = new p.Switch({
+    var protocolCheck = new p.CheckBox({
       value: item.matchProtocol,
       tooltip: "Check the URL's Protocol (http://, https://, etc.) when Testing for This Match.",
     });
     
     var protocolLabel = new p.Label({
       text: "Match Protocol:",
-      forInput: protocolSwitch,
+      forInput: protocolCheck,
       tooltip: "Check the URL's Protocol (http://, https://, etc.) when Testing for This Match.",
     });
     
-    layout.applyButton ? layout.applyButton.destroy() : null;
     layout.applyButton = new p.Button({
       text: "Apply",
       leftIcon: new p.FAIcon("fa-check"),
@@ -184,7 +180,7 @@ function buildDetails(item) {
     layout.applyButton.registerCallback("clicked", "click", function(widget) {
       item.src = srcField.value;
       item.dest = destField.value;
-      item.matchProtocol = protocolSwitch.value;
+      item.matchProtocol = protocolCheck.value;
       // Fake delay.
       // Prevents spam-clicking which might cause isseues with localstorage settings.
       widget.leftIcon = new p.FAIcon("fa-spin fa-cog");
@@ -198,7 +194,6 @@ function buildDetails(item) {
     });
     p.domInsert(layout.applyButton, document.getElementById("details"));
     
-    layout.deleteButton ? layout.deleteButton.destroy() : null;
     layout.deleteButton = new p.Button({
       text: "Delete",
       leftIcon: new p.FAIcon("fa-times"),
@@ -235,7 +230,7 @@ function buildDetails(item) {
     layout.detailBox.addChild(protocolLabel, {
       gridX: 0, gridY: i,
     });
-    layout.detailBox.addChild(protocolSwitch, {
+    layout.detailBox.addChild(protocolCheck, {
       gridX: 1, gridY: i,
     });
     i++;

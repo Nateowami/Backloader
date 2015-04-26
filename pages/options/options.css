@@ -6,7 +6,17 @@ body, html {
   padding: 0px;
 }
 
-.header, .tip {
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.photonui-gridlayout table {
+  width: 100%;
+  height: 100%;
+}
+
+.header {
   position: absolute;
   width: 100%;
   text-align: center;
@@ -14,18 +24,9 @@ body, html {
   color: #444;
   pointer-events: none;
   -webkit-user-select: none;
-}
-
-.header {
   top: -25px;
   font-size: 30px;
 }
-
-.tip {
-  top: calc(10% - 30px);
-  color: #666;
-}
-
 
 #widgetArea {
   position: absolute;
@@ -41,29 +42,54 @@ body, html {
   padding: 5px;
 }
 
+.middleSection {
+  height: 100%;
+}
+
+.listSelect {
+  width: 200px;
+  margin-bottom: -2px;
+}
+
+#topBar .enableToggle {
+  width: 75px;
+}
+
 #leftBar  {
   box-sizing: border-box;
   float: left;
-  height: calc(100% + 11px);
-  width: 40%;
-  margin-top: -5px;
-  border-right: 1px solid #bbb;
+  height: calc(100% - 75px);
+  width: 330px;
 }
 
 #leftBar .photonui-layout-orientation-vertical > table {
   border-spacing: 0px 1px !important;
 }
 
+#topControls {
+  margin-top: 2px;
+}
+
+#topControls .photonui-button {
+  line-height: 1em;
+  height: 30px !important;
+  width: 40px !important;
+}
+
+#topControls .addButton {
+  width: auto !important;
+}
+
+#topControls .removeButton {
+  width: auto !important;
+}
+
+
 #filterList {
-  height: calc(100% - 44px);
+  height: 100% !important;
   margin: 0px;
   padding-top: 5px;
   overflow: auto !important;
-}
-
-#filterList .photonui-button {
-  line-height: 25px;
-  margin: 0px;
 }
 
 .listButton {
@@ -73,8 +99,8 @@ body, html {
   padding-left: 5px;
   line-height: 25px;
   text-align: left;
-  min-width: 300px;
-  max-width: 300px;
+  min-width: 315px;
+  max-width: 315px;
   overflow: hidden;
   border: none;
 }
@@ -83,10 +109,15 @@ body, html {
   background-color: #F1F1F1;
 }
 
-.listButton.active {
+.photonui-button.active {
   color: #FFF;
   text-shadow: 1px 1px 0px #01585F;
   background-color: #3BC5D2;
+}
+
+.positionButton {
+  min-width: 100%;
+  max-width: 100%;
 }
 
 #details {
@@ -94,48 +125,10 @@ body, html {
   padding: 10px;
   float: left;
   height: 100%;
-  width: 60%;
+  width: calc(100% - 330px);
 }
 
 #details table {
   width: 100%;
   height: 100%;
-}
-
-.photonui-switch span {
-  width: 25%;
-}
-
-.addButton {
-  box-sizing: border-box;
-  position: absolute;
-  left: 0;
-  width: 20%;
-  bottom: 0;
-  border-radius: 0px 0px 0px 4px;
-}
-
-.resetButton {
-  box-sizing: border-box;
-  position: absolute;
-  left: calc(20% + 1px);
-  width: calc(20% - 0px);
-  border-radius: 0px;
-  bottom: 0;
-}
-
-.applyButton {
-  position: absolute;
-  width: calc(30% - 1px);
-  bottom: 0px;
-  left: calc(40% + 2px);
-  border-radius: 0px;
-}
-
-.deleteButton {
-  position: absolute;
-  width: calc(30% - 1px);
-  bottom: 0px;
-  right: 0px;
-  border-radius: 0px 0px 4px 0px;
 }

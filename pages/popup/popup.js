@@ -30,7 +30,7 @@ function initPopup(items) {
     leftIcon: new p.FAIcon("fa-cog"),
   });
   optionsButton.registerCallback("open-options", "click", function(widget) {
-    chrome.tabs.create({url: './pages/options.html'});
+    chrome.tabs.create({url: './pages/options/options.html'});
   });
   
   controlBox.addChild(enableButton);

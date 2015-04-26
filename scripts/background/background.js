@@ -72,64 +72,67 @@ function manageRequest(request) {
 	//only run if filtering is enabled
 	if(!backloader.enabled) return;
 	
-	for(var i = 0; i < filterList.length; i++) {
-		var originalSource = request.url;
-		var testSource = filterList[i].src;
-		
-		// Just in-case someone leaves a field entirely whitespace.
-		if(testSource == null || testSource == "" || testSource == " ") continue;
-		
-		var redirect = null;
-		if(!filterList[i].matchProtocol) {
-			/**
-			* Ignores the source and testing protocol, redirecting to the destination
-			* no matter what protocol it is. (eg, http:// and https:// redirect to http://)
-			*/
+	for(var r = 0; r < filterList.length; r++) {
+		for(var i = 0; i < filterList[r].rules.length; i++) {
+			var rule = filterList[r].rules[i];
+			var originalSource = request.url;
+			var testSource = rule.src;
 			
-			// Use URLParser to split out the protocol before testing. Might be a bit overkill
-			var pOrigSource = urlParser.parse(originalSource);
-			var pTestSource = urlParser.parse(testSource);
-			var pDest = urlParser.parse(filterList[i].dest);
-			var protocol = pDest.protocol;
+			// Just in-case someone leaves a field entirely whitespace.
+			if(testSource == null || testSource == "" || testSource == " ") continue;
 			
-			pOrigSource = pOrigSource.href.split(pOrigSource.protocol).join("");
-			pTestSource = pTestSource.href.split(pTestSource.protocol).join("");
-			pDest = pDest.href.split(pDest.protocol).join("");
-			
-			if(match(pTestSource, pOrigSource)) {
-				redirect = redirectUrl(
-					pTestSource,
-					pDest,
-					originalSource,
-					protocol
-				);
+			var redirect = null;
+			if(!rule.matchProtocol) {
+				/**
+				* Ignores the source and testing protocol, redirecting to the destination
+				* no matter what protocol it is. (eg, http:// and https:// redirect to http://)
+				*/
+				
+				// Use URLParser to split out the protocol before testing. Might be a bit overkill
+				var pOrigSource = urlParser.parse(originalSource);
+				var pTestSource = urlParser.parse(testSource);
+				var pDest = urlParser.parse(rule.dest);
+				var protocol = pDest.protocol;
+				
+				pOrigSource = pOrigSource.href.split(pOrigSource.protocol).join("");
+				pTestSource = pTestSource.href.split(pTestSource.protocol).join("");
+				pDest = pDest.href.split(pDest.protocol).join("");
+				
+				if(match(pTestSource, pOrigSource)) {
+					redirect = redirectUrl(
+						pTestSource,
+						pDest,
+						originalSource,
+						protocol
+					);
+				} else {
+					continue;
+				}
+				
 			} else {
-				continue;
+				if(match(testSource, originalSource)) {
+					redirect = redirectUrl(
+						rule.src,
+						rule.dest,
+						request.url,
+						null
+					);
+				} else {
+					continue;
+				}
 			}
 			
-		} else {
-			if(match(testSource, originalSource)) {
-				redirect = redirectUrl(
-					filterList[i].src,
-					filterList[i].dest,
-					request.url,
-					null
-				);
+			if(redirect) {
+				console.log("Redirecting "+request.url+" to " + redirect);
+				backloader.increment("redirected");
+				return {redirectUrl: redirect};
+				
 			} else {
-				continue;
+				//block the request
+				console.log("Blocking " + request.url);
+				backloader.increment("blocked");
+				return {cancel: true};
 			}
-		}
-		
-		if(redirect) {
-			console.log("Redirecting "+request.url+" to " + redirect);
-			backloader.increment("redirected");
-			return {redirectUrl: redirect};
-			
-		} else {
-			//block the request
-			console.log("Blocking " + request.url);
-			backloader.increment("blocked");
-			return {cancel: true};
 		}
 	}
 }
@@ -190,7 +193,7 @@ function redirectUrl(source, target, url, protocol){
 		// Strip out any additional wildcards, just in case and add the protocol
 		return protocol+joined.split("*").join("");
 	}
-
+	
 	// In the rare but possible case that there are no matches, return the joined target.
 	return protocol+targetSplit.join("");
 }
