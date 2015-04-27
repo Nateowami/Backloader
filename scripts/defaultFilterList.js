@@ -3,61 +3,47 @@ var defaultFilterList = [
     name: "Default - China",
     isEnabled: true,
     isEditable: false,
+    activePage: null,
     rules: [
       {
-        src: "http://ajax.googleapis.com/ajax/*",
+        src: "ajax.googleapis.com/ajax/*",
         dest: "http://ajax.useso.com/ajax/*",
-        matchProtocol: false,
       },
       {
-        src: "http://html5shiv.googlecode.com/svn/trunk/html5.js",
-        dest: "",
-        matchProtocol: true,
-      },
-      {
-        src: "http://fonts.googleapis.com/*",
+        src: "fonts.googleapis.com/*",
         dest: "http://fonts.useso.com/*",
-        matchProtocol: false,
       },
       {
         src: "https://*fastly.net*",
         dest: "http://*fastly.net*",
-        matchProtocol: true,
       },
       {
-        src: "http://*google.com*",
+        src: "*google.com*",
         dest: "",
-        matchProtocol: false,
       },
       {
-        src: "http://*googleapis.*",
+        src: "*googleapis.*",
         dest: "",
-        matchProtocol: false,
       },
       {
-        src: "http://*googlecode.*",
+        src: "*googlecode.*",
         dest: "",
-        matchProtocol: false,
       },
       {
-        src: "http://*facebook.*",
+        src: "*facebook.*",
         dest: "",
-        matchProtocol: false,
       },
       {
-        src: "http://*twitter.*",
+        src: "*twitter.*",
         dest: "",
-        matchProtocol: false,
       },
       {
-        src: "http://*youtube.*",
+        src: "*youtube.*",
         dest: "",
-        matchProtocol: false,
       },
       {
-        src: "http://*youtu.be*",
+        src: "*youtu.be*",
         dest: "",
-        matchProtocol: false,
       },
     ]
   }

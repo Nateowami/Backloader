@@ -7,13 +7,14 @@
 
   "permissions": [
     "storage",
+    "tabs",
     "webRequest",
     "webRequestBlocking",
     "*://*/*"
   ],
 
   "background": {
-    "scripts": ["scripts/defaultFilterList.js", "scripts/util/url.js", "scripts/background/background.js"],
+    "scripts": ["scripts/defaultFilterList.js", "scripts/background/background.js"],
     "css": ["popup.css"]
   },
   

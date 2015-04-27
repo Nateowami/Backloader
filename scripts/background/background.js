@@ -1,5 +1,10 @@
 var filterList = [];
 
+var splitTabPage = {
+	protocol: null,
+	path: null,
+};
+
 // Set "enabled" to true on first run
 chrome.runtime.onInstalled.addListener(function(details){
 	if(details.reason === "install"){
@@ -59,7 +64,14 @@ loadFilterList(function(list) {
 });
 
 function init() {
-	//register an event listener for all web requests
+	// Update the current tab URL every time the tab changes.
+	chrome.tabs.onActivated.addListener(function(data) {
+		chrome.tabs.get(data.tabId, function(ret) {
+			splitTabPage = splitByProtocol(ret.url);
+		});
+	});
+
+	// Register an event listener for all web requests.
 	chrome.webRequest.onBeforeRequest.addListener(manageRequest, {urls: ["<all_urls>"]}, ["blocking"]);
 }
 
@@ -69,72 +81,69 @@ function init() {
 * @param request - The webrequest.
 */
 function manageRequest(request) {
-	//only run if filtering is enabled
+	// Only run if filtering is enabled
 	if(!backloader.enabled) return;
 	
 	for(var r = 0; r < filterList.length; r++) {
-		for(var i = 0; i < filterList[r].rules.length; i++) {
-			var rule = filterList[r].rules[i];
-			var originalSource = request.url;
-			var testSource = rule.src;
+		var list = filterList[r];
+		// Only run the rule checks if this list is meant to be active on this page.
+		if(list.activePage == null || list.activePage == "" || list.activePage == " ") {
+			// Using || instead of && for speed.
+		} else {
+			var splitActivePage = splitByProtocol(list.activePage);
+			// If this list is not active on this page, skip it.
+			if(!match(splitActivePage.path, splitTabPage.path))
+				continue;
+		}
+		
+		for(var i = 0; i < list.rules.length; i++) {
+			var rule = list.rules[i];
+			var requestUrl = request.url;
+			var testUrl = rule.src;
 			
 			// Just in-case someone leaves a field entirely whitespace.
-			if(testSource == null || testSource == "" || testSource == " ") continue;
+			if(testUrl == null || testUrl == "" || testUrl == " ") continue;
 			
-			var redirect = null;
-			if(!rule.matchProtocol) {
-				/**
-				* Ignores the source and testing protocol, redirecting to the destination
-				* no matter what protocol it is. (eg, http:// and https:// redirect to http://)
-				*/
-				
-				// Use URLParser to split out the protocol before testing. Might be a bit overkill
-				var pOrigSource = urlParser.parse(originalSource);
-				var pTestSource = urlParser.parse(testSource);
-				var pDest = urlParser.parse(rule.dest);
-				var protocol = pDest.protocol;
-				
-				pOrigSource = pOrigSource.href.split(pOrigSource.protocol).join("");
-				pTestSource = pTestSource.href.split(pTestSource.protocol).join("");
-				pDest = pDest.href.split(pDest.protocol).join("");
-				
-				if(match(pTestSource, pOrigSource)) {
-					redirect = redirectUrl(
-						pTestSource,
-						pDest,
-						originalSource,
-						protocol
-					);
-				} else {
+			// Split up the URLs into protocols and paths
+			var splitRequestUrl = splitByProtocol(requestUrl);
+			var splitTestUrl = splitByProtocol(testUrl);
+			
+			if(match(splitTestUrl.path, splitRequestUrl.path)) {
+				if(rule.dest != null && rule.dest != "" && match(rule.dest, requestUrl))
 					continue;
+					
+				var splitTargetUrl = splitByProtocol(rule.dest);
+				var protocol = splitRequestUrl.protocol;
+				
+				if(splitTargetUrl.protocol != null) {
+					protocol = splitTargetUrl.protocol;
 				}
 				
-			} else {
-				if(match(testSource, originalSource)) {
-					redirect = redirectUrl(
-						rule.src,
-						rule.dest,
-						request.url,
-						null
-					);
+				var redirect = redirectUrl(
+					splitTestUrl.path,
+					splitTargetUrl.path,
+					splitRequestUrl.path,
+					protocol
+				);
+
+				if(redirect) {
+					console.log("Redirecting "+request.url+" to " + redirect);
+					backloader.increment("redirected");
+					return {redirectUrl: redirect};
+					
 				} else {
-					continue;
+					//block the request
+					console.log("Blocking " + request.url);
+					backloader.increment("blocked");
+					return {cancel: true};
 				}
-			}
-			
-			if(redirect) {
-				console.log("Redirecting "+request.url+" to " + redirect);
-				backloader.increment("redirected");
-				return {redirectUrl: redirect};
-				
-			} else {
-				//block the request
-				console.log("Blocking " + request.url);
-				backloader.increment("blocked");
-				return {cancel: true};
-			}
+			};
 		}
 	}
+}
+
+function removeUrlObjProtocol(urlObj) {
+	return urlObj.href.split(urlObj.protocol).join("");
 }
 
 /**
@@ -208,4 +217,18 @@ function escapeUrl(url) {
 	//regex from http://stackoverflow.com/questions/2593637/how-to-escape-regular-expression-in-javascript
 	return url.replace(/([.?+^$[\]\\(){}|-])/g, '\\$1')
 	.split('*').join('(.*)');
+}
+
+/**
+* Splits a URL into a protocol and a path.
+* @param {String} url - the URL to split.
+* @return {Object} {protocol: null or the URL's protocol, path: The rest of the URL.}
+**/
+function splitByProtocol(url) {
+	var splitUrl = url.split("://");
+	if(splitUrl.length > 1) {
+		return {protocol: splitUrl[0]+"://", path: splitUrl[1]};
+	} else {
+		return {protocol: null, path: splitUrl[0]};
+	}
 }
