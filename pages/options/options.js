@@ -347,6 +347,16 @@ function reBuildDetails(id) {
       srcField.value = rule.src;
       destField.value = rule.dest;
       
+      // Callback needs to be re-registered or the wrong rule will be updated.
+      applyBtn.registerCallback("apply", "click", function() {
+        rule.src = srcField.value;
+        rule.dest = destField.value;
+        reBuildDetails();
+        reBuildRuleList();
+        
+        saveList();
+      });
+      
       // Make sure to disable the apply button if the list isn't editable.
       if(filterList[filterSelection].isEditable) {
         applyBtn.removeClass("disabled");
