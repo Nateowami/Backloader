@@ -580,21 +580,53 @@ function addEditList(isNew) {
     editDialog.destroy();
   });
   
-  // Deletion logic
   p.getWidget("list-edit-delete").registerCallback("delete", "click", function() {
-    // Always check if this is a new list, just in case.
-    if(!isNew) {
-      filterList.splice(filterSelection, 1);
-      // Rebuild all the things!
-      reBuildTopBar(0);
-      reBuildRuleList();
-      reBuildDetails();
-
-      // Commit
-      saveList();
-      editDialog.destroy();
-    }
+    var confirmDialog = new p.Dialog({
+      title: "Delete list?",
+      modal: true,
+      x: $(document).width()/2-200,
+      y: $(document).height()/2-100,
+      width: 400,
+      height: 100,
+      padding: 5,
+      child: new p.Text({text: "Are you sure you want to delete \"" + name + "\"?"}),
+      buttons: [
+        new p.Button({
+          name: "list-delete-confirm",
+          text: "Delete",
+          leftIcon: new p.FAIcon("fa-trash")
+        }),
+        new p.Button({
+          name: "list-delete-cancel",
+          text: "Cancel",
+          leftIcon: new p.FAIcon("fa-times")
+        })
+      ]
+    });
+    confirmDialog.show();
+    
+    p.getWidget("list-delete-cancel").registerCallback("delete-cancel", "click", confirmDialog.destroy, confirmDialog);
+    confirmDialog.registerCallback("dialog-close", "close-button-clicked", confirmDialog.destroy, confirmDialog);
+    
+    // Deletion logic
+    p.getWidget("list-delete-confirm").registerCallback("delete", "click", function() {
+      // Always check if this is a new list, just in case.
+      if(!isNew) {
+        filterList.splice(filterSelection, 1);
+        // Rebuild all the things!
+        reBuildTopBar(0);
+        reBuildRuleList();
+        reBuildDetails();
+        
+        // Commit
+        saveList();
+        confirmDialog.destroy();
+        editDialog.destroy();
+      }
+    });
+    
   });
+  
   p.getWidget("list-edit-delete").setVisible(!isNew);
   
   // Both buttons close the dialog without making changes.
