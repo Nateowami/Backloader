@@ -2,29 +2,46 @@
   "manifest_version": 2,
 
   "name": "Backloader",
-  "version": "0.1.0",
-  "description": "A Chrome extension to redirect CDN requests to another CDN",
+  "version": "0.2.0",
+  "description": "A Chrome extension to redirect HTTP requests to other URLs",
 
   "permissions": [
     "storage",
+    "tabs",
     "webRequest",
     "webRequestBlocking",
     "*://*/*"
   ],
 
   "background": {
-    "scripts": ["scripts/list.js", "scripts/background.js"],
+    "scripts": ["scripts/defaultFilterList.js", "scripts/background/background.js"],
     "css": ["popup.css"]
   },
   
   "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html",
+    "default_icon": "img/icon.png",
+    "default_popup": "pages/popup/popup.html",
     "default_title": "Backloader"
   },
   
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "css": [
+        "styles/remove_routerware.css"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  
   "icons": {
-    "128": "icon.png"
-  }
+    "128": "img/icon.png"
+  },
+  
+  "options_page": "pages/options/options.html"
   
 }
