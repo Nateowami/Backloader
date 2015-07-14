@@ -83,6 +83,7 @@ function reBuildTopBar(selectedIndex) {
       
       // When the value changes, set the selected list's isEnabled value.
       filterList[listSelect.getValue()].isEnabled = enableToggle.value;
+      saveList();
     });
     
     options.widgets.topBar.addChild(enableToggle);
