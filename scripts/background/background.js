@@ -85,6 +85,8 @@ function manageRequest(request) {
 	if(!backloader.enabled) return;
 	
 	for(var r = 0; r < filterList.length; r++) {
+		if(!filterList[r].isEnabled) continue;
+		
 		var list = filterList[r];
 		// Only run the rule checks if this list is meant to be active on this page.
 		if(list.activePage == null || list.activePage == "" || list.activePage == " ") {
