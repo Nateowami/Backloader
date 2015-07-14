@@ -24,6 +24,20 @@
     "default_title": "Backloader"
   },
   
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "css": [
+        "styles/remove_routerware.css"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  
   "icons": {
     "128": "img/icon.png"
   },

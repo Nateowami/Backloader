@@ -1,0 +1,7 @@
+
+/* Certain Chinese (hacked?) routers (I'm looking at you, Tenda) inject this div into pages at random.
+ * It fills the screen and causes clicks on it to redirect to an advertising page.
+ */
+#tempDIv {
+	display: none !important;
+}
