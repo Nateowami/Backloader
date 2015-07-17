@@ -63,6 +63,10 @@ loadFilterList(function(list) {
 	init();
 });
 
+loadEnabled(function(enabled) {
+	backloader.enabled = enabled;
+});
+
 function init() {
 	// Update the current tab URL every time the tab changes.
 	chrome.tabs.onActivated.addListener(function(data) {
@@ -156,6 +160,13 @@ function loadFilterList(cb) {
 		cb ? cb(storageResults["filter-list"]) : null;
 	});
 }
+
+function loadEnabled(cb) {
+	chrome.storage.local.get("enabled", function(storageResults) {
+		cb ? cb(storageResults["enabled"]) : null;
+	});
+}
+
 
 /**
 * Tells if the parameters source and target match, including wildcards
