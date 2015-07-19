@@ -36,14 +36,22 @@ function reBuildTopBar(selectedIndex) {
   var listSelect = options.widgets.listSelect;
   if(!listSelect) {
     listSelect = options.widgets.listSelect = new p.Select({});
+    var listSelectPrevValue = listSelect.value;
     options.widgets.topBar.addChild(listSelect);
     
     // When the value changes, set the enable Checkbox's value.
     listSelect.registerCallback("change", "value-changed", function() {
       var val = listSelect.getValue();
+      
       if(val == "NEW") {
+        // Return menu to previous state
+        listSelect.value = null;
+        listSelect.value = listSelectPrevValue;
+        // Open the list editing dialog
         addEditList(true);
       } else {
+        listSelectPrevValue = listSelect.value;
+        
         var item = filterList[val];
         
         // Update the enable togglebutton's value
@@ -548,13 +556,43 @@ function addEditList(isNew) {
   });
   
   // Apply logic
-  p.getWidget("list-edit-apply").registerCallback("apply", "click", function() {
+  p.getWidget("list-edit-apply").registerCallback("apply", "click", function() {    
     var filterObject = {
       name: nameField.value,
       isEnabled: true,
       isEditable: true,
       activePage: pageField.value,
       rules: [],
+    }
+    
+    //don't let the name be empty
+    if(filterObject.name == ""){
+      new p.Dialog({
+        title: "No list name",
+        name: "list-edit-no-name-dialog",
+        visible: true,
+        x: $(document).width()/2-200,
+        y: $(document).height()/2-100,
+        child: new p.Text({rawHtml: '<span class="fa fa-exclamation-triangle"></span>You must specify a name for the filter list.'}),
+        modal: true,
+        padding: 10,
+        buttons: [
+          new p.Button({
+            text: "OK",
+            callbacks: {
+              click: function(widget){
+                p.getWidget("list-edit-no-name-dialog").destroy();
+              }
+            }
+          }),
+        ],
+        callbacks: {
+          "close-button-clicked": function(widget){
+            widget.destroy();
+          }
+        }
+      });
+      return;
     }
     
     if(!isNew) {
@@ -639,7 +677,6 @@ function addEditList(isNew) {
   $(".name-field").on("input", function(){
     positionBtn.text = null;
     positionBtn.text = nameField.value;
-    console.log("done");
   });
 }
 
