@@ -373,7 +373,7 @@ function reBuildDetails(id) {
 }
 
 function addEditList(isNew) {
-  var name = isNew ? "New List" : filterList[filterSelection].name;
+  var name = isNew ? "" : filterList[filterSelection].name;
   var activeIndex = isNew ? filterList.length : filterSelection;
   
   // Create base dialog with buttons
@@ -415,9 +415,11 @@ function addEditList(isNew) {
     text: "Name:"
   });
   nameField = new p.TextField({
+    name: "new-list-name",
+    placeholder: name ? "" : "List name",
     value: name,
   });
-  
+    
   pageLabel = new p.Label({
     text: "Active Page:"
   });
@@ -425,11 +427,6 @@ function addEditList(isNew) {
     value: isNew ? null : filterList[filterSelection].activePage,
     placeholder: "The page to activate this list on. Leave blank for all pages.",
     tooltip: "The page to activate this list on. Leave blank for all pages.",
-  });
-  
-  // Update the name of the position button when value changes
-  nameField.registerCallback("change", "value-changed", function(widget) {
-    positionBtn.text = widget.value;
   });
   
   positionLabel = new p.Label({
@@ -497,7 +494,7 @@ function addEditList(isNew) {
     
     positionBtn = new p.Button({
       name: "Active",
-      text: nameField.value,
+      text: nameField.value || " ", // Space required or we can't update it
     });
     positionBtn.addClass("listButton positionButton active");
     
@@ -632,6 +629,18 @@ function addEditList(isNew) {
   // Both buttons close the dialog without making changes.
   p.getWidget("list-edit-cancel").registerCallback("cancel-close", "click", editDialog.destroy, editDialog);
   editDialog.registerCallback("dialog-close", "close-button-clicked", editDialog.destroy, editDialog);
+  
+    
+  p.getWidget("new-list-name").addClass("new-list-name");
+  $(".new-list-name").focus();
+  
+  // Update the name of the position button when value changes
+  nameField.addClass("name-field");
+  $(".name-field").on("input", function(){
+    positionBtn.text = null;
+    positionBtn.text = nameField.value;
+    console.log("done");
+  });
 }
 
 function saveList() {
