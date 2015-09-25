@@ -1,6 +1,9 @@
+var browser = browser || chrome;
+
 var p = photonui;
 $(document).ready(function() {
-  chrome.storage.local.get(["enabled", "redirected", "blocked"], initPopup);
+  // Arg 1: ['enabled', 'redirected', 'blocked'] regressed to null for Firefox support.
+  browser.storage.local.get(null, initPopup);
 });
 
 
@@ -22,7 +25,7 @@ function initPopup(items) {
   
   enableButton.registerCallback("toggled", "click", function(widget) {
     widget.text = widget.value ? "Disable" : "Enable";
-    chrome.storage.local.set({enabled: widget.value});
+    browser.storage.local.set({enabled: widget.value});
   });
   
   var optionsButton = new p.Button({
@@ -30,7 +33,7 @@ function initPopup(items) {
     leftIcon: new p.FAIcon("fa-cog"),
   });
   optionsButton.registerCallback("open-options", "click", function(widget) {
-    chrome.tabs.create({url: './pages/options/options.html'});
+    browser.tabs.create({url: './pages/options/options.html'});
   });
   
   controlBox.addChild(enableButton);

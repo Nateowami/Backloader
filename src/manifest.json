@@ -3,10 +3,11 @@
 
   "name": "Backloader",
   "version": "0.2.0",
-  "description": "A Chrome extension to redirect HTTP requests to other URLs",
+  "description": "A browser extension to redirect HTTP requests to other URLs",
 
   "permissions": [
     "storage",
+    "unlimitedStorage",
     "tabs",
     "webRequest",
     "webRequestBlocking",
@@ -22,6 +23,12 @@
     "default_icon": "img/icon.png",
     "default_popup": "pages/popup/popup.html",
     "default_title": "Backloader"
+  },
+  
+  "applications": {
+    "gecko": {
+      "id": "backloader@nateowami.github.io"
+    }
   },
   
   "content_scripts": [
