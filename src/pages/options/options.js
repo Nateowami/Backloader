@@ -1,3 +1,5 @@
+var browser = browser || chrome;
+
 var p = photonui;
 
 var options = {
@@ -10,7 +12,8 @@ var ruleSelection = null;
 
 $(document).ready(function() {
   prepareLayout();
-  chrome.storage.local.get('filter-list', init);
+  // Arg 1: ['filter-list'] regressed to null for Firefox support.
+  browser.storage.local.get(null, init);
 });
 
 function init(storageResults) {
@@ -556,7 +559,7 @@ function addEditList(isNew) {
   });
   
   // Apply logic
-  p.getWidget("list-edit-apply").registerCallback("apply", "click", function() {    
+  p.getWidget("list-edit-apply").registerCallback("apply", "click", function() {
     var filterObject = {
       name: nameField.value,
       isEnabled: true,
@@ -681,7 +684,7 @@ function addEditList(isNew) {
 }
 
 function saveList() {
-  chrome.storage.local.set({
+  browser.storage.local.set({
     "filter-list": filterList,
   }, function() {
   });
