@@ -243,7 +243,7 @@ function reBuildRuleList() {
     var item = filterList[filterSelection].rules[i];
     
     var listButton = new p.Button({
-      text: item.src,
+      text: item.src || " ",
       tooltip: "Edit This Filter",
       name: "listButton-"+i
     });
@@ -275,6 +275,8 @@ function reBuildRuleList() {
 function reBuildDetails(id) {
   var detailsGrid = options.widgets.detailsGrid;
   
+  var editable = filterList[filterSelection].isEditable;
+
   if(id != null) {
     var rule = filterList[filterSelection].rules[id];
 
@@ -325,13 +327,6 @@ function reBuildDetails(id) {
         saveList();
       });
       
-      // Make sure to disable the apply button if the list isn't editable.
-      if(filterList[filterSelection].isEditable) {
-        applyBtn.removeClass("disabled");
-      } else {
-        applyBtn.addClass("disabled");
-      }
-      
       detailsGrid.addChild(srcLabel, {
         gridX: 0, gridY: 0,
       });
@@ -366,15 +361,21 @@ function reBuildDetails(id) {
         saveList();
       });
       
-      // Make sure to disable the apply button if the list isn't editable.
-      if(filterList[filterSelection].isEditable) {
-        applyBtn.removeClass("disabled");
-      } else {
-        applyBtn.addClass("disabled");
-      }
+    }
+
+    // Disable widgets if filter isn't editable
+    $("#details-src-field").attr("disabled", !editable);
+    $("#details-dest-field").attr("disabled", !editable);
+    if(editable) {
+      applyBtn.removeClass("disabled");
+    } else {
+      applyBtn.addClass("disabled");
     }
     
     detailsGrid.setVisible(true);
+    
+    //focus src field (must happen AFTER detailsGrid is set visible)
+    $("#details-src-field").focus();
   } else {
     detailsGrid.setVisible(false);
   }
