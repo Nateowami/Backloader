@@ -296,8 +296,8 @@ function reBuildDetails(id) {
       srcField = new p.TextField({
         name: "details-src-field",
         value: rule.src,
-        placeholder: 'Match URL (eg. "google.com" or "https://twitter.com/some/page/*")',
-        tooltip: 'Match URL (eg. "google.com" or "https://twitter.com/some/page/*")',
+        placeholder: 'Match URL (e.g. "google.com" or "https://twitter.com/some/page/*")',
+        tooltip: 'Match URL (e.g. "google.com" or "https://twitter.com/some/page/*")',
       });
       
       destLabel = new p.Label({
@@ -308,8 +308,8 @@ function reBuildDetails(id) {
       destField = new p.TextField({
         name: "details-dest-field",
         value: rule.dest,
-        placeholder: 'Redirect URL (eg. "example.com" or "http://somewhereelse.net/*")',
-        tooltip: 'Redirect URL (eg. "example.com" or "http://somewhereelse.net/*")',
+        placeholder: 'Redirect URL (Leave blank to block requests. Wildcards supported)")',
+        tooltip: 'Redirect URL (Leave blank to block requests. Wildcards supported)',
       });
       
       applyBtn = new p.Button({
