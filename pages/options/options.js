@@ -345,7 +345,7 @@ function reBuildDetails(id) {
       applyBtn.registerCallback("apply", "click", function() {
         rule.src = srcField.value;
         rule.dest = destField.value;
-        reBuildDetails();
+        reBuildDetails(ruleSelection);
         reBuildRuleList();
         
         saveList();
@@ -379,7 +379,7 @@ function reBuildDetails(id) {
       applyBtn.registerCallback("apply", "click", function() {
         rule.src = srcField.value;
         rule.dest = destField.value;
-        reBuildDetails();
+        reBuildDetails(ruleSelection);
         reBuildRuleList();
         
         saveList();
