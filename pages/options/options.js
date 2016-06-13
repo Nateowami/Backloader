@@ -67,11 +67,12 @@ function reBuildTopBar(selectedIndex) {
           editButton.removeClass("disabled");
         }
         
+        ruleSelection = null;
         filterSelection = +val;
-        
         reBuildRuleList();
         reBuildDetails();
         updateRuleSortingButtons();
+        updateRemoveButtonState();
       }
     });
     listSelect.addClass("listSelect");
@@ -193,6 +194,7 @@ function reBuildRuleList() {
       var rules = filterList[filterSelection].rules;
       //handle the edge case where there are no rules, and ruleSelection 
       //is therefore set to 0
+      if(ruleSelection == null) ruleSelection = rules.length;
       ruleSelection = Math.min(ruleSelection + 1, rules.length);
       rules.splice(ruleSelection, 0, {
         src: "",
@@ -201,6 +203,7 @@ function reBuildRuleList() {
       });
       reBuildRuleList();
       updateRuleSortingButtons();
+      updateRemoveButtonState();
       reBuildDetails(ruleSelection);
     });
     topControls.addChild(addButton);
@@ -209,27 +212,26 @@ function reBuildRuleList() {
       text: "Remove Rule",
       tooltip: "Remove the Selected Filter Rule",
       leftIcon: new p.FAIcon("fa-trash"),
+      name: "remove-button",
     });
     removeButton.addClass("removeButton");
     removeButton.registerCallback("remove-item", "click", function(widget) {
       var rules = filterList[filterSelection].rules;
       rules.splice(ruleSelection, 1)
       //move to the next rule, or, if there is no lower rule, the lowest rule
-      ruleSelection = Math.min(ruleSelection, rules.length-1);
+      if(rules.length == 0) ruleSelection = 0;
+      else ruleSelection = Math.min(ruleSelection, rules.length-1);
       updateRuleSortingButtons();
       reBuildRuleList();
-      reBuildDetails();
+      reBuildDetails(rules.length > 0 ? ruleSelection : null);
+      updateRemoveButtonState();
       saveList();
     });
     topControls.addChild(removeButton);
     
     p.domInsert(topControls, document.getElementById("topControls"));
     
-    if(!filterList[filterSelection].isEditable) {
-      $("#topControls .photonui-button").addClass("disabled");
-    } else {
-      $("#topControls .photonui-button").removeClass("disabled");
-    }
+    if(!filterList[filterSelection].isEditable) addButton.addClass("disabled");
   }
   
   var currentActiveId = $(".listButton.active").attr("id");
@@ -252,6 +254,7 @@ function reBuildRuleList() {
       
       $(".listButton").removeClass("active");
       $(widget.html).addClass("active");
+      updateRemoveButtonState();
       updateRuleSortingButtons();
     });
     
@@ -276,11 +279,21 @@ function reBuildRuleList() {
 // set them to whatever state they should be in.
 function updateRuleSortingButtons(){
   var ruleUpBtn = p.getWidget("rule-up-btn"), ruleDownBtn = p.getWidget("rule-down-btn");
-  if(ruleSelection >= 1) ruleUpBtn.removeClass("disabled");
+  var filter = filterList[filterSelection]
+  if(ruleSelection >= 1 && filter.isEditable) ruleUpBtn.removeClass("disabled");
   else ruleUpBtn.addClass("disabled");
   
-  if(ruleSelection < filterList[filterSelection].rules.length - 1) ruleDownBtn.removeClass("disabled");
+  if(ruleSelection != null && ruleSelection < filter.rules.length - 1 && filter.isEditable) ruleDownBtn.removeClass("disabled");
   else ruleDownBtn.addClass("disabled");
+}
+
+
+// Enables or disables the remove rule button as needed
+function updateRemoveButtonState(){
+  var btn = p.getWidget("remove-button");
+  var filter = filterList[filterSelection];
+  if(ruleSelection != null && filter.rules.length > 0 && filter.isEditable) btn.removeClass("disabled");
+  else btn.addClass("disabled");
 }
 
 function reBuildDetails(id) {
