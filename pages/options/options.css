@@ -16,6 +16,11 @@ body, html {
   height: 100%;
 }
 
+/* Apply to second column */
+.photonui-gridlayout table td + td {
+  width: 100%;
+}
+
 .header {
   position: absolute;
   width: 100%;

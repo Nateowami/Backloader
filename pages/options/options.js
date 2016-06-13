@@ -368,8 +368,8 @@ function reBuildDetails(id) {
       });
       
       detailsGrid.addChild(applyBtn, {
-        gridX: 0, gridY: 2,
-        gridWidth: 2,
+        gridX: 1, gridY: 2,
+        gridWidth: 1,
       });
     } else {
       srcField.value = rule.src;
