@@ -17,7 +17,7 @@ body, html {
 }
 
 /* Apply to second column */
-.photonui-gridlayout table td + td {
+#details .photonui-gridlayout table td + td {
   width: 100%;
 }
 
