@@ -270,6 +270,11 @@ function reBuildRuleList() {
     options.widgets.ruleListBox.addChild(listButton);
   }
   
+  if(filterList[filterSelection].rules.length == 0) {
+    var label = new p.Label({text: 'There are no rules. Click "Add Rule" to add one.'});
+    options.widgets.ruleListBox.addChild(label);
+  }
+  
 }
 
 // Update the state of the buttons that move rules up and down in the list.
