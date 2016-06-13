@@ -71,7 +71,7 @@ function reBuildTopBar(selectedIndex) {
         
         reBuildRuleList();
         reBuildDetails();
-
+        updateRuleSortingButtons();
       }
     });
     listSelect.addClass("listSelect");
@@ -153,18 +153,13 @@ function reBuildRuleList() {
     var ruleUpBtn = new p.Button({
       textVisible: false,
       leftIcon: new p.FAIcon("fa-caret-up"),
+      name: "rule-up-btn"
     });
     ruleUpBtn.registerCallback("move-up", "click", function(widget) {
       var rules = filterList[filterSelection].rules;
       rules.moveUp(rules[ruleSelection]);
-      
-      if(ruleSelection >= 2) {
-        ruleSelection -= 1;
-        ruleDownBtn.removeClass("disabled");
-      } else {
-        ruleSelection = 0;
-        ruleUpBtn.addClass("disabled");
-      }
+      ruleSelection -= 1;
+      updateRuleSortingButtons();
       
       reBuildRuleList();
       saveList();
@@ -174,18 +169,14 @@ function reBuildRuleList() {
     var ruleDownBtn = new p.Button({
       textVisible: false,
       leftIcon: new p.FAIcon("fa-caret-down"),
+      name: "rule-down-btn"
     });
     ruleDownBtn.registerCallback("move-down", "click", function(widget) {
       var rules = filterList[filterSelection].rules;
       rules.moveDown(rules[ruleSelection]);
       
-      if(ruleSelection < rules.length - 2) {
-        ruleSelection += 1;
-        ruleUpBtn.removeClass("disabled");
-      } else {
-        ruleSelection = rules.length - 1;
-        ruleDownBtn.addClass("disabled");
-      }
+      ruleSelection += 1;
+      updateRuleSortingButtons();
       
       reBuildRuleList();
       saveList();
@@ -200,27 +191,32 @@ function reBuildRuleList() {
     addButton.addClass("addButton");
     addButton.registerCallback("add-item", "click", function(widget) {
       var rules = filterList[filterSelection].rules;
-      rules.push({
+      //handle the edge case where there are no rules, and ruleSelection 
+      //is therefore set to 0
+      ruleSelection = Math.min(ruleSelection + 1, rules.length);
+      rules.splice(ruleSelection, 0, {
         src: "",
         dest: "",
         matchProtocol: false,
       });
-      ruleSelection = rules.length-1;
       reBuildRuleList();
-      reBuildDetails(rules.length-1);
+      updateRuleSortingButtons();
+      reBuildDetails(ruleSelection);
     });
     topControls.addChild(addButton);
     
     var removeButton = new p.Button({
       text: "Remove Rule",
       tooltip: "Remove the Selected Filter Rule",
-      leftIcon: new p.FAIcon("fa-times"),
+      leftIcon: new p.FAIcon("fa-trash"),
     });
     removeButton.addClass("removeButton");
     removeButton.registerCallback("remove-item", "click", function(widget) {
       var rules = filterList[filterSelection].rules;
-      rules.splice(-1,1)
-      ruleSelection = rules.length-1;
+      rules.splice(ruleSelection, 1)
+      //move to the next rule, or, if there is no lower rule, the lowest rule
+      ruleSelection = Math.min(ruleSelection, rules.length-1);
+      updateRuleSortingButtons();
       reBuildRuleList();
       reBuildDetails();
       saveList();
@@ -252,11 +248,11 @@ function reBuildRuleList() {
     listButton.addClass("listButton");
     listButton.registerCallback("clicked", "click", function(widget) {
       ruleSelection = +widget.name.split("-")[1];
-      
       reBuildDetails(ruleSelection);
       
       $(".listButton").removeClass("active");
       $(widget.html).addClass("active");
+      updateRuleSortingButtons();
     });
     
     if(ruleSelection == i) {
@@ -270,6 +266,21 @@ function reBuildRuleList() {
     
     options.widgets.ruleListBox.addChild(listButton);
   }
+  
+}
+
+// Update the state of the buttons that move rules up and down in the list.
+// They sometimes need to be disabled. For example, when the top rule is 
+// selected, the "move up" button should be disabled. There are several 
+// actions that should cause them to be re-enabled. This function will 
+// set them to whatever state they should be in.
+function updateRuleSortingButtons(){
+  var ruleUpBtn = p.getWidget("rule-up-btn"), ruleDownBtn = p.getWidget("rule-down-btn");
+  if(ruleSelection >= 1) ruleUpBtn.removeClass("disabled");
+  else ruleUpBtn.addClass("disabled");
+  
+  if(ruleSelection < filterList[filterSelection].rules.length - 1) ruleDownBtn.removeClass("disabled");
+  else ruleDownBtn.addClass("disabled");
 }
 
 function reBuildDetails(id) {
