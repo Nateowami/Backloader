@@ -612,6 +612,7 @@ function addEditList(isNew) {
             callbacks: {
               click: function(widget){
                 p.getWidget("list-edit-no-name-dialog").destroy();
+                $("#new-list-name").focus();
               }
             }
           }),
@@ -619,6 +620,7 @@ function addEditList(isNew) {
         callbacks: {
           "close-button-clicked": function(widget){
             widget.destroy();
+            $("#new-list-name").focus();
           }
         }
       });
