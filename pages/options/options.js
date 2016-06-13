@@ -391,7 +391,10 @@ function reBuildDetails(id) {
       });
       
     }
-
+    
+    clickOnEnter("details-src-field", "details-apply-btn");
+    clickOnEnter("details-dest-field", "details-apply-btn");
+    
     // Disable widgets if filter isn't editable
     $("#details-src-field").attr("disabled", !editable);
     $("#details-dest-field").attr("disabled", !editable);
@@ -408,6 +411,14 @@ function reBuildDetails(id) {
   } else {
     detailsGrid.setVisible(false);
   }
+}
+
+//event handler for button for detecting the pressing of enter in the textbox 
+//of the specified id and acting on it by clicking the button with the specified id
+function clickOnEnter(textbox, button) {
+  $("#" + textbox).keyup(function(){
+    if(event.keyCode == 13) $("#" + button).click();
+  });
 }
 
 function addEditList(isNew) {
