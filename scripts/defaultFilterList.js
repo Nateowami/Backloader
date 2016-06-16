@@ -7,11 +7,11 @@ var defaultFilterList = [
     rules: [
       {
         src: "ajax.googleapis.com/ajax/*",
-        dest: "http://ajax.useso.com/ajax/*",
+        dest: "cdnjs.cloudflare.com/ajax/*",
       },
       {
         src: "fonts.googleapis.com/*",
-        dest: "http://fonts.useso.com/*",
+        dest: "fonts.useso.com/*",
       },
       {
         src: "https://*fastly.net*",
