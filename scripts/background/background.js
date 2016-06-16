@@ -88,7 +88,7 @@ function init() {
 */
 function manageRequest(request) {
 	// Only run if filtering is enabled
-	if(!backloader.enabled) return;
+	if(!backloader.enabled || !filterList) return;
 	
 	for(var r = 0; r < filterList.length; r++) {
 		if(!filterList[r].isEnabled) continue;
