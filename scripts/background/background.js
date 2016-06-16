@@ -28,6 +28,7 @@ function updateEnabled(changes, namespace) {
 		if(namespace == "local") {
 			if(key == "enabled") {
 				backloader.enabled = change.newValue;
+                setIcon(backloader.enabled);
 				console.log("Updated local-storage-enable-status from " + change.oldValue + " to " + change.newValue);
 				
 			} else if(key == "filter-list") {
@@ -65,6 +66,7 @@ loadFilterList(function(list) {
 
 loadEnabled(function(enabled) {
 	backloader.enabled = enabled;
+	setIcon(enabled);
 });
 
 function init() {
@@ -81,7 +83,7 @@ function init() {
 
 /**
 * Manages a webrequest, redirecting or blocking as necessary. Called
-* directly by Chrome when the onBeforeRequest even fires.
+* directly by Chrome when the onBeforeRequest event fires.
 * @param request - The webrequest.
 */
 function manageRequest(request) {
@@ -244,4 +246,12 @@ function splitByProtocol(url) {
 	} else {
 		return {protocol: null, path: splitUrl[0]};
 	}
+}
+
+/**
+ * Sets the browser action icon to color or grayscale based on the provided paramater.
+ * @param {boolean} status - True if icon should be in color, false for grayscale.
+ */
+function setIcon(status) {
+  chrome.browserAction.setIcon({path: status ? "img/icon.png" : "img/icon-grayscale.png"});
 }
